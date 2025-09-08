@@ -85,6 +85,7 @@
         <div class="flex-grow-1">
             <main class="p-4">
                 @yield('content')
+                @include('chatbot.chatbot')
             </main>
         </div>
     </div>
