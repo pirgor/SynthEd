@@ -56,12 +56,24 @@
 
                         <!-- Forgot Password -->
                         @if (Route::has('password.request'))
-                            <div class="text-center">
-                                <a class="text-white text-decoration-underline" href="{{ route('password.request') }}">
-                                    Forgot Your Password?
-                                </a>
+                            <div class="text-center mt-3">
+                                <p class="mb-1">
+                                    <a class="text-white text-decoration-underline" href="{{ route('password.request') }}">
+                                        Forgot your password?
+                                    </a>
+                                </p>
+                                @if (Route::has('register'))
+                                    <p class="mb-0 text-white">
+                                        Don’t have an account?
+                                        <a class="text-white fw-bold text-decoration-underline"
+                                            href="{{ route('register') }}">
+                                            Register here
+                                        </a>
+                                    </p>
+                                @endif
                             </div>
                         @endif
+
                     </form>
                 </div>
             </div>

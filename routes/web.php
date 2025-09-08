@@ -20,6 +20,5 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/', [ChatController::class, 'index'])->name('chat.show');
 Route::post('/send', [ChatController::class, 'send']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
