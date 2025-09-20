@@ -22,6 +22,8 @@ class User extends Authenticatable
         'student_id',
         'email',
         'password',
+        'user_role',
+        'profile_picture',
     ];
 
     /**
@@ -47,5 +49,15 @@ class User extends Authenticatable
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->user_role === 'student';
+    }
+
+    public function isInstructor(): bool
+    {
+        return $this->user_role === 'instructor';
     }
 }

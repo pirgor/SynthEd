@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'SynthEd') }}</title>
-    
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -28,6 +28,7 @@
 <body>
     <div id="app" class="d-flex">
         @auth
+            <!-- Sidebar -->
             <!-- Sidebar -->
             <nav class="d-flex flex-column flex-shrink-0 p-3 shadow"
                 style="width: 250px; min-height: 100vh; background-color: #224D3D;">
@@ -50,22 +51,46 @@
                             <i class="bi bi-bell me-2"></i> Notifications
                         </a>
                     </li>
-                    <li>
-                        <a class="nav-link sidebar-link">
-                            <i class="bi bi-journal-text me-2"></i> Course Content
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link sidebar-link">
-                            <i class="bi bi-clipboard-check me-2"></i> My Grades
-                        </a>
-                    </li>
+
+                    @if (Auth::user()->user_role === 'student')
+                        <li>
+                            <a class="nav-link sidebar-link">
+                                <i class="bi bi-journal-text me-2"></i> Course Content
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link sidebar-link">
+                                <i class="bi bi-clipboard-check me-2"></i> My Grades
+                            </a>
+                        </li>
+                    @elseif (Auth::user()->user_role === 'instructor')
+                        <li>
+                            <a class="nav-link sidebar-link">
+                                <i class="bi bi-mortarboard me-2"></i> Manage Courses
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link sidebar-link">
+                                <i class="bi bi-mortarboard me-2"></i> Quizzes
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link sidebar-link">
+                                <i class="bi bi-people me-2"></i> Students
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link sidebar-link">
+                                <i class="bi bi-bar-chart me-2"></i> Analytics
+                            </a>
+                        </li>
+                    @endif
                 </ul>
 
                 <!-- Bottom menu -->
                 <ul class="nav nav-pills flex-column mt-auto">
                     <li>
-                        <a class="nav-link sidebar-link">
+                        <a class="nav-link sidebar-link" href="{{ route('tts.settings.edit') }}">
                             <i class="bi bi-gear me-2"></i> Settings
                         </a>
                     </li>
@@ -80,6 +105,7 @@
                     </form>
                 </ul>
             </nav>
+
         @endauth
 
         <!-- Main Content -->
@@ -94,4 +120,5 @@
         </div>
     </div>
 </body>
+
 </html>
