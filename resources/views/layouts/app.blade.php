@@ -70,7 +70,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link">
+                            <a class="nav-link sidebar-link" href="{{ route('quizzes.index') }}">
                                 <i class="bi bi-mortarboard me-2"></i> Quizzes
                             </a>
                         </li>

@@ -131,10 +131,7 @@
     });
 
     window.onload = () => {
-        if (@json(count($chatHistory) > 0)) {
-            document.getElementById('chatWindow').style.display = 'block';
             scrollToBottom();
-        }
     };
 
     // 👇 Custom resizer logic

@@ -9,12 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void {
-        Schema::create('tts_settings', function (Blueprint $table) {
+    public function up()
+    {
+        Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('voice_id')->default('onwK4e9ZLuTAKqWW03F9'); // default male
-            $table->float('speed')->default(1.0);
+            $table->string('title');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tts_settings');
+        Schema::dropIfExists('quizzes');
     }
 };
