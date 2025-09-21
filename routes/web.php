@@ -44,8 +44,9 @@ Route::post('/send', [ChatController::class, 'send']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // routes/web.php
-Route::get('/check-env', function () {
+Route::get('/check-gemini', function () {
     return [
-        'env' => env('GEMINI_API_KEY', 'not found'),
+        'gemini' => config('services.gemini.key'),
+        'elevenlabs' => config('services.elevenlabs.key'),
     ];
 });
