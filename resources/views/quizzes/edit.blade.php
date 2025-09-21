@@ -4,7 +4,7 @@
 <div class="container">
     <h2>Edit Quiz: {{ $quiz->title }}</h2>
 
-    <form method="POST" action="{{ route('quizzes.update', $quiz) }}">
+    <form method="POST" action="{{ route('instructor.quizzes.update', $quiz) }}">
         @csrf
         @method('PUT')
 
@@ -20,7 +20,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Update Quiz</button>
-        <a href="{{ route('quizzes.index') }}" class="btn btn-secondary">Back to Quizzes</a>
+        <a href="{{ route('instructor.quizzes.index') }}" class="btn btn-secondary">Back to Quizzes</a>
     </form>
 </div>
 @endsection

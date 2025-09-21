@@ -59,7 +59,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link">
+                            <a class="nav-link sidebar-link" href="{{ route('student.grades') }}">
                                 <i class="bi bi-clipboard-check me-2"></i> My Grades
                             </a>
                         </li>
@@ -70,7 +70,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link" href="{{ route('quizzes.index') }}">
+                            <a class="nav-link sidebar-link" href="{{ route('instructor.quizzes.index') }}">
                                 <i class="bi bi-mortarboard me-2"></i> Quizzes
                             </a>
                         </li>
@@ -114,7 +114,11 @@
                 @yield('content')
 
                 @auth
-                    @include('chatbot.chatbot')
+                    @unless (request()->routeIs('student.quizzes.take') ||
+                            request()->routeIs('student.quizzes.results') ||
+                            request()->routeIs('student.quizzes.attempts'))
+                        @include('chatbot.chatbot')
+                    @endunless
                 @endauth
             </main>
         </div>

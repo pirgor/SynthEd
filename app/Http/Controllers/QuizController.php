@@ -26,7 +26,7 @@ class QuizController extends Controller
     {
         $request->validate(['title' => 'required|string']);
         Quiz::create($request->only('title', 'description'));
-        return redirect()->route('quizzes.index')->with('success', 'Quiz created!');
+        return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz created!');
     }
 
     public function edit(Quiz $quiz)
@@ -38,13 +38,13 @@ class QuizController extends Controller
     {
         $request->validate(['title' => 'required|string']);
         $quiz->update($request->only('title', 'description'));
-        return redirect()->route('quizzes.index')->with('success', 'Quiz updated!');
+        return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz updated!');
     }
 
     public function destroy(Quiz $quiz)
     {
         $quiz->delete();
-        return redirect()->route('quizzes.index')->with('success', 'Quiz deleted!');
+        return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz deleted!');
     }
 
 
@@ -143,7 +143,7 @@ Course material:
             }
         }
 
-        return redirect()->route('quizzes.questions.index', $quiz)
+        return redirect()->route('instructor.quizzes.questions.index', $quiz)
             ->with('success', 'AI-generated questions saved successfully!');
     }
 
@@ -244,4 +244,5 @@ Course material:
 
         return $text;
     }
+    
 }

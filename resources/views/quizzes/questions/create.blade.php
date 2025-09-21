@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<form method="POST" action="{{ route('quizzes.questions.store', $quiz) }}" id="question-form">
+<form method="POST" action="{{ route('instructor.quizzes.questions.store', $quiz) }}" id="question-form">
     @csrf
     <div class="container">
         <h2>Create Question for: {{ $quiz->title }}</h2>
@@ -24,7 +24,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Save Question</button>
-        <a href="{{ route('quizzes.questions.index', $quiz) }}" class="btn btn-secondary">Back to Questions</a>
+        <a href="{{ route('instructor.quizzes.questions.index', $quiz) }}" class="btn btn-secondary">Back to Questions</a>
     </div>
 </form>
 

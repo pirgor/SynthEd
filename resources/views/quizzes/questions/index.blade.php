@@ -4,9 +4,9 @@
     <div class="container">
         <h1>Questions for: {{ $quiz->title }}</h1>
 
-        <a href="{{ route('quizzes.questions.create', $quiz) }}" class="btn btn-primary mb-3">Add New Question</a>
-        <a href="{{ route('quizzes.index') }}" class="btn btn-secondary mb-3">Back to Quizzes</a>
-        <a href="{{ route('quizzes.quizzes.generate', $quiz) }}" class="btn btn-success mb-3">Generate Questions</a>
+        <a href="{{ route('instructor.quizzes.questions.create', $quiz) }}" class="btn btn-primary mb-3">Add New Question</a>
+        <a href="{{ route('instructor.quizzes.index') }}" class="btn btn-secondary mb-3">Back to Quizzes</a>
+        <a href="{{ route('instructor.quizzes.generate', $quiz) }}" class="btn btn-success mb-3">Generate Questions</a>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -40,9 +40,9 @@
                                 </ul>
                             </td>
                             <td>
-                                <a href="{{ route('quizzes.questions.edit', [$quiz, $question]) }}"
+                                <a href="{{ route('instructor.quizzes.questions.edit', [$quiz, $question]) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('quizzes.questions.destroy', [$quiz, $question]) }}" method="POST"
+                                <form action="{{ route('instructor.quizzes.questions.destroy', [$quiz, $question]) }}" method="POST"
                                     class="d-inline">
                                     @csrf
                                     @method('DELETE')

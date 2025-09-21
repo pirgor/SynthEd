@@ -7,6 +7,7 @@ use App\Http\Controllers\SpeechController;
 use App\Http\Controllers\TtsSettingsController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\StudentQuizController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,29 +25,54 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/speech-test', [SpeechController::class, 'index'])->name('speech.test');
-    Route::post('/speech-generate', [SpeechController::class, 'generate'])->name('speech.generate');
+// -------------------- STUDENT ROUTES --------------------
+Route::middleware(['auth', 'role:student'])
+    ->prefix('student')
+    ->name('student.')
+    ->group(function () {
+        // List all quizzes for student
+        Route::get('quizzes', [StudentQuizController::class, 'index'])->name('quizzes.index');
 
-    Route::get('/settings/tts', [TtsSettingsController::class, 'edit'])->name('tts.settings.edit');
-    Route::put('/settings/tts', [TtsSettingsController::class, 'update'])->name('tts.settings.update');
+        // Take a quiz
+        Route::get('quizzes/{quiz}/take', [StudentQuizController::class, 'take'])->name('quizzes.take');
 
-    Route::resource('quizzes', QuizController::class);
+        // Submit quiz answers
+        Route::post('quizzes/{quiz}/submit', [StudentQuizController::class, 'submit'])->name('quizzes.submit');
 
-    Route::prefix('quizzes/{quiz}')->as('quizzes.')->group(function () {
-        Route::resource('questions', QuestionController::class);
-        Route::get('generate', [QuizController::class, 'showGenerateForm'])->name('quizzes.generate');
-        Route::post('generate', [QuizController::class, 'generateQuestions'])->name('quizzes.generate.post');
+        // View results of a specific attempt
+        Route::get('quizzes/{quiz}/results/{attempt}', [StudentQuizController::class, 'results'])->name('quizzes.results');
+
+        // View history of attempts
+        Route::get('quizzes/{quiz}/attempts', [StudentQuizController::class, 'attempts'])->name('quizzes.attempts');
+
+        // Grades
+        Route::get('grades', [StudentQuizController::class, 'grades'])->name('grades');
     });
-});
+
+// -------------------- INSTRUCTOR ROUTES --------------------
+Route::middleware(['auth', 'role:instructor'])
+    ->prefix('instructor')
+    ->name('instructor.')
+    ->group(function () {
+        // CRUD for quizzes
+        Route::resource('quizzes', QuizController::class);
+
+        // Quiz-specific routes
+        Route::prefix('quizzes/{quiz}')->as('quizzes.')->group(function () {
+            // CRUD for quiz questions
+            Route::resource('questions', QuestionController::class);
+
+            // Generate AI questions
+            Route::get('generate', [QuizController::class, 'showGenerateForm'])->name('generate');
+            Route::post('generate', [QuizController::class, 'generateQuestions'])->name('generate.post');
+        });
+    });
+
+
+Route::get('/speech-test', [SpeechController::class, 'index'])->name('speech.test');
+Route::post('/speech-generate', [SpeechController::class, 'generate'])->name('speech.generate');
+Route::get('/settings/tts', [TtsSettingsController::class, 'edit'])->name('tts.settings.edit');
+Route::put('/settings/tts', [TtsSettingsController::class, 'update'])->name('tts.settings.update');
 
 Route::post('/send', [ChatController::class, 'send']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// routes/web.php
-Route::get('/check-gemini', function () {
-    return [
-        'gemini' => config('services.gemini.key'),
-        'elevenlabs' => config('services.elevenlabs.key'),
-    ];
-});

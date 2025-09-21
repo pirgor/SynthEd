@@ -4,7 +4,7 @@
     <div class="container">
         <h2>Generate Questions for: {{ $quiz->title }}</h2>
 
-        <form method="POST" action="{{ route('quizzes.quizzes.generate.post', $quiz) }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('instructor.quizzes.generate.post', $quiz) }}" enctype="multipart/form-data">
             @csrf
 
             <div class="mb-3">
@@ -19,7 +19,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Generate Questions</button>
-            <a href="{{ route('quizzes.questions.index', $quiz) }}" class="btn btn-secondary">Back to Questions</a>
+            <a href="{{ route('instructor.quizzes.questions.index', $quiz) }}" class="btn btn-secondary">Back to Questions</a>
         </form>
     </div>
 @endsection

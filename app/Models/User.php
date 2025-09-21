@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->user_role === 'instructor';
     }
+
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
 }

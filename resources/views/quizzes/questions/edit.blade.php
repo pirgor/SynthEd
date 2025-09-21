@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<form method="POST" action="{{ route('quizzes.questions.update', [$quiz, $question]) }}" id="question-form">
+<form method="POST" action="{{ route('instructor.quizzes.questions.update', [$quiz, $question]) }}" id="question-form">
     @csrf
     @method('PUT')
     <div class="container">
@@ -25,7 +25,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Update Question</button>
-        <a href="{{ route('quizzes.questions.index', $quiz) }}" class="btn btn-secondary">Back to Questions</a>
+        <a href="{{ route('instructor.quizzes.questions.index', $quiz) }}" class="btn btn-secondary">Back to Questions</a>
     </div>
 </form>
 
