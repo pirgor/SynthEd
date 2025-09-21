@@ -40,7 +40,12 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-
-
 Route::post('/send', [ChatController::class, 'send']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// routes/web.php
+Route::get('/check-env', function () {
+    return [
+        'env' => env('GEMINI_API_KEY', 'not found'),
+    ];
+});
