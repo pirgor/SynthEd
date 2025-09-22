@@ -97,6 +97,14 @@ class StudentQuizController extends Controller
             'feedback' => $feedback,
         ]);
 
+        foreach ($answers as $questionId => $optionId) {
+            \App\Models\QuizAnswer::create([
+                'quiz_attempt_id' => $attempt->id,
+                'question_id' => $questionId,
+                'option_id' => $optionId,
+            ]);
+        }
+
         return redirect()->route('student.quizzes.results', [$quiz, $attempt])
             ->with('success', 'Quiz submitted successfully!');
     }
@@ -126,6 +134,8 @@ class StudentQuizController extends Controller
     // Show results
     public function results(Quiz $quiz, \App\Models\QuizAttempt $attempt)
     {
+        $attempt->load('answers');
+        $quiz->load('questions.options');
         return view('student.quizzes.results', compact('quiz', 'attempt'));
     }
 
