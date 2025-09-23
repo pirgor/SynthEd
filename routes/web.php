@@ -55,6 +55,12 @@ Route::middleware(['auth', 'role:instructor'])
     ->prefix('instructor')
     ->name('instructor.')
     ->group(function () {
+
+        // Instructor Home (Dashboard)
+
+        Route::get('/home', [App\Http\Controllers\Instructor\HomeController::class, 'index'])
+            ->name('home');
+
         // CRUD for quizzes
         Route::resource('quizzes', QuizController::class);
 
