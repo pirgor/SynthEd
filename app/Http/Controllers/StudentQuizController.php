@@ -16,8 +16,14 @@ class StudentQuizController extends Controller
     // Show quiz to student
     public function take(Quiz $quiz)
     {
-        $hasAttempted = $quiz->attempts()->where('user_id', auth()->id())->exists();
+        // ⏳ Check if deadline has passed
+        if ($quiz->deadline && now()->greaterThan($quiz->deadline)) {
+            return redirect()->route('student.quizzes.index')
+                ->with('swal_error', 'This quiz is no longer available. The deadline has passed.');
+        }
 
+        // 🔒 Check if student already attempted
+        $hasAttempted = $quiz->attempts()->where('user_id', auth()->id())->exists();
         if ($hasAttempted) {
             return redirect()->route('student.quizzes.index')
                 ->with('swal_error', 'You have already attempted this quiz.');
@@ -26,6 +32,7 @@ class StudentQuizController extends Controller
         $quiz->load('questions.options');
         return view('student.quizzes.take', compact('quiz'));
     }
+
 
     public function grades()
     {

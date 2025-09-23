@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SpeechController;
 use App\Http\Controllers\TtsSettingsController;
 use App\Http\Controllers\QuizController;
@@ -20,7 +21,7 @@ use App\Http\Controllers\StudentQuizController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
@@ -68,6 +69,8 @@ Route::middleware(['auth', 'role:instructor'])
         });
     });
 
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('auth.edit');
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('auth.update');
 
 Route::get('/speech-test', [SpeechController::class, 'index'])->name('speech.test');
 Route::post('/speech-generate', [SpeechController::class, 'generate'])->name('speech.generate');
