@@ -65,23 +65,33 @@
                         </li>
                     @elseif (Auth::user()->user_role === 'instructor')
                         <li>
-                            <a class="nav-link sidebar-link">
-                                <i class="bi bi-mortarboard me-2"></i> Manage Courses
+                            <a href="{{ route('instructor.dashboard') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-speedometer2 me-2"></i> Dashboard
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link" href="{{ route('instructor.quizzes.index') }}">
+                            <a href="{{ route('instructor.content.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-file-earmark-arrow-up me-2"></i> Content Upload
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('instructor.quizzes.index') }}" class="nav-link sidebar-link">
                                 <i class="bi bi-mortarboard me-2"></i> Quizzes
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link">
-                                <i class="bi bi-people me-2"></i> Students
+                            <a href="{{ route('instructor.assessments.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-clipboard-data me-2"></i> Assessment Management
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link">
+                            <a href="{{ route('instructor.analytics.index') }}" class="nav-link sidebar-link">
                                 <i class="bi bi-bar-chart me-2"></i> Analytics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('instructor.progress.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-graph-up me-2"></i> Student Progress
                             </a>
                         </li>
                     @endif
