@@ -72,8 +72,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('instructor.content.index') }}" class="nav-link sidebar-link">
-                                <i class="bi bi-file-earmark-arrow-up me-2"></i> Content Upload
+                            <a href="{{ route('instructor.lessons.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-file-earmark-arrow-up me-2"></i> Course Content
                             </a>
                         </li>
                         <li>

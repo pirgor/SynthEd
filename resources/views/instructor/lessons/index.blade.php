@@ -6,6 +6,19 @@
     </div>
     <div class="container py-4">
         <div class="accordion" id="lessonsAccordion">
+            {{-- Only show to instructors --}}
+            @if (Auth::user()->user_role === 'instructor')
+                <div class="mb-3 d-flex justify-content-end gap-2">
+                    <a href="{{ route('instructor.lessons.create') }}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Create Lesson
+                    </a>
+
+                    <a href="{{ route('instructor.quizzes.create') }}" class="btn btn-info">
+                        <i class="bi bi-plus-circle"></i> Create Quiz
+                    </a>
+                </div>
+            @endif
+
             @foreach ($lessons as $index => $lesson)
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="heading{{ $index }}">
@@ -16,7 +29,8 @@
                         </button>
                     </h2>
 
-                    <div id="lesson{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                    <div id="lesson{{ $index }}"
+                        class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                         aria-labelledby="heading{{ $index }}" data-bs-parent="#lessonsAccordion">
 
                         <div class="accordion-body">
