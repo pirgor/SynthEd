@@ -17,6 +17,8 @@ class SpeechController extends Controller
 
     public function generate(Request $request)
     {
+        set_time_limit(120); // increase max execution time
+
         $request->validate([
             'text' => 'required|string',
         ]);
@@ -27,26 +29,24 @@ class SpeechController extends Controller
             [
                 'voice_id' => 'onwK4e9ZLuTAKqWW03F9', // default male
                 'speed' => 1.0,
-                'stability' => 0.75,
-                'similarity_boost' => 0.75,
             ]
         );
 
         $apiKey = env('ELEVENLABS_API_KEY');
 
-        $response = Http::withHeaders([
-            'xi-api-key' => $apiKey,
-            'Content-Type' => 'application/json',
-        ])->post("https://api.elevenlabs.io/v1/text-to-speech/{$userSettings->voice_id}", [
-            'text' => $request->input('text'),
-            'model_id' => 'eleven_multilingual_v2',
-            'output_format' => 'mp3_44100_128',
-            'voice_settings' => [
-                'stability' => (float) $userSettings->stability,
-                'similarity_boost' => (float) $userSettings->similarity_boost,
-                'speed' => (float) $userSettings->speed,
-            ]
-        ]);
+        $response = Http::timeout(120) // 120 seconds
+            ->withHeaders([
+                'xi-api-key' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->post("https://api.elevenlabs.io/v1/text-to-speech/{$userSettings->voice_id}", [
+                'text' => $request->input('text'),
+                'model_id' => 'eleven_multilingual_v2',
+                'output_format' => 'mp3_44100_128',
+                'voice_settings' => [
+                    'speed' => (float) $userSettings->speed,
+                    'similarity_boost' => (float) $userSettings->similarity_boost,
+                ]
+            ]);
 
         if (!$response->successful()) {
             Log::error('ElevenLabs API error', [

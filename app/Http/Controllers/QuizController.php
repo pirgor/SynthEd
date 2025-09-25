@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizUpload;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\Lesson;
 
 class QuizController extends Controller
 {
@@ -19,13 +20,17 @@ class QuizController extends Controller
 
     public function create()
     {
-        return view('quizzes.create');
+        $lessons = Lesson::all(); // fetch all lessons
+        return view('quizzes.create', compact('lessons'));
     }
 
     public function store(Request $request)
     {
-        $request->validate(['title' => 'required|string']);
-        Quiz::create($request->only('title', 'description'));
+        $request->validate([
+            'title' => 'required|string',
+            'lesson_id' => 'required|exists:lessons,id', // validate lesson exists
+        ]);
+        Quiz::create($request->only('title', 'description', 'lesson_id'));
         return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz created!');
     }
 
@@ -244,5 +249,4 @@ Course material:
 
         return $text;
     }
-    
 }

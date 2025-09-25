@@ -20,6 +20,8 @@
 
     <!-- Bootstrap 5 -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -54,8 +56,8 @@
 
                     @if (Auth::user()->user_role === 'student')
                         <li>
-                            <a class="nav-link sidebar-link">
-                                <i class="bi bi-journal-text me-2"></i> Course Content
+                            <a class="nav-link sidebar-link" href="{{ route('student.stud.lessons') }}">
+                                <i class="bi bi-journal-text me-2" ></i> Course Content
                             </a>
                         </li>
                         <li>
@@ -133,6 +135,7 @@
             </main>
         </div>
     </div>
+    @yield('scripts')
 </body>
 
 </html>
