@@ -78,11 +78,6 @@
                         </li>
                         <li>
                             <a href="{{ route('instructor.quizzes.index') }}" class="nav-link sidebar-link">
-                                <i class="bi bi-mortarboard me-2"></i> Quizzes
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('instructor.assessments.index') }}" class="nav-link sidebar-link">
                                 <i class="bi bi-clipboard-data me-2"></i> Assessment Management
                             </a>
                         </li>
