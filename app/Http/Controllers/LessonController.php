@@ -11,7 +11,7 @@ class LessonController extends Controller
 {
     public function index()
     {
-        $lessons = Lesson::with('uploads')->latest()->get();
+        $lessons = Lesson::with('uploads', 'quizzes')->orderBy('id')->get();
         return view('instructor.lessons.index', compact('lessons'));
     }
 
@@ -66,6 +66,10 @@ class LessonController extends Controller
 
     public function viewUpload(LessonUpload $upload)
     {
-        return view('instructor.lessons.view', compact('upload'));
+        $lesson = $upload->lesson;
+        return view('instructor.lessons.view', compact('upload', 'lesson'));
     }
+
+
+    
 }

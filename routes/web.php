@@ -49,7 +49,17 @@ Route::middleware(['auth', 'role:student'])
         // View all grades for the student
         Route::get('grades', [StudentQuizController::class, 'grades'])->name('grades');
 
-        Route::get('course',[LessonController::class, 'index'])->name('stud.lessons');
+        Route::get('course', [LessonController::class, 'index'])->name('stud.lessons');
+
+        Route::get('lessons/{lesson}/practice', [QuizController::class, 'showPrac'])
+            ->name('lessons.practice');
+        Route::post('lessons/{lesson}/practice', [QuizController::class, 'generatePrac'])
+            ->name('lessons.practice.generate');
+        Route::post(
+            'student/lessons/{lesson}/practice/generate',
+            [QuizController::class, 'generatePrac']
+        )
+            ->name('lessons.practice.generate');
     });
 
 // -------------------- INSTRUCTOR ROUTES --------------------
