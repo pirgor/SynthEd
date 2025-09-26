@@ -37,6 +37,5 @@ class ProfileController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('auth.edit')->with('success', 'Profile updated successfully!');
-    }
+return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');    }
 }

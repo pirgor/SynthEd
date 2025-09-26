@@ -44,20 +44,24 @@
                 <!-- Top menu -->
                 <ul class="nav nav-pills flex-column mb-auto">
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="{{ route('auth.edit') }}">
+                        <a class="nav-link sidebar-link" href="{{ route('profile.edit') }}">
                             <i class="bi bi-person-circle me-2"></i> Profile
                         </a>
                     </li>
+                    <!-- Replace the existing notifications link with this -->
                     <li>
-                        <a class="nav-link sidebar-link">
+                        <a class="nav-link sidebar-link" href="{{ route('instructor.notifications.index') }}">
                             <i class="bi bi-bell me-2"></i> Notifications
+                            @if (auth()->user()->unreadNotifications()->count() > 0)
+                                <span class="badge bg-danger ms-auto">{{ auth()->user()->unreadNotifications()->count() }}</span>
+                            @endif
                         </a>
                     </li>
 
                     @if (Auth::user()->user_role === 'student')
                         <li>
                             <a class="nav-link sidebar-link" href="{{ route('student.stud.lessons') }}">
-                                <i class="bi bi-journal-text me-2" ></i> Course Content
+                                <i class="bi bi-journal-text me-2"></i> Course Content
                             </a>
                         </li>
                         <li>
@@ -131,6 +135,30 @@
         </div>
     </div>
     @yield('scripts')
+
+<script>
+    // Update notification count in sidebar
+    function updateNotificationCount() {
+        fetch('{{ route("instructor.notifications.index") }}')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const count = doc.querySelector('.badge.bg-danger')?.textContent || 0;
+
+                const badge = document.querySelector('.nav-link[href*="notifications"] .badge');
+                if (badge) {
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'inline-block' : 'none';
+                }
+            });
+    }
+
+    // Check every 30 seconds
+    setInterval(updateNotificationCount, 30000);
+</script>
+
+
 </body>
 
 </html>
