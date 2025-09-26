@@ -165,3 +165,31 @@
     height: 100%;
     cursor: ew-resize;
 }
+
+.box-item {
+    border: 1px solid #ccc;      /* Outline */
+    border-radius: 8px;           /* Rounded corners */
+    padding: 0.5rem 1rem;         /* Space inside */
+    transition: all 0.2s;         /* Smooth hover */
+}
+
+.box-item:hover {
+    background-color: #f8f9fa;   /* Slight highlight */
+    border-color: #0d6efd;       /* Blue outline on hover */
+}
+
+.reading-link {
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #000;
+}
+
+.reading-link:hover {
+    text-decoration: underline;
+}
+
+
+.lesson-accordion-btn {
+    font-size: 1.25rem; /* same as reading link */
+    font-weight: 600;   /* optional, make it bolder */
+}

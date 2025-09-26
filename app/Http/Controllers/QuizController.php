@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\QuizUpload;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\Lesson;
 
 class QuizController extends Controller
 {
@@ -19,13 +20,17 @@ class QuizController extends Controller
 
     public function create()
     {
-        return view('quizzes.create');
+        $lessons = Lesson::all(); // fetch all lessons
+        return view('quizzes.create', compact('lessons'));
     }
 
     public function store(Request $request)
     {
-        $request->validate(['title' => 'required|string']);
-        Quiz::create($request->only('title', 'description'));
+        $request->validate([
+            'title' => 'required|string',
+            'lesson_id' => 'required|exists:lessons,id', // validate lesson exists
+        ]);
+        Quiz::create($request->only('title', 'description', 'lesson_id'));
         return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz created!');
     }
 
@@ -244,5 +249,69 @@ Course material:
 
         return $text;
     }
-    
+
+
+    public function showPrac(Lesson $lesson)
+    {
+        return view('instructor.lessons.practice', compact('lesson'));
+    }
+
+    public function generatePrac(Request $request, Lesson $lesson)
+    {
+        $request->validate([
+            'question_count' => 'required|integer|min:1|max:10',
+        ]);
+
+        $questionCount = $request->input('question_count');
+
+        // Combine all lesson texts
+        $content = $lesson->uploads->pluck('extracted_text')->filter()->implode("\n");
+
+        $prompt = "
+You are an exam question generator for practice quizzes.
+Read the following lesson material and generate {$questionCount} multiple-choice questions.
+Each question must have exactly 4 options, only one correct.
+Also, provide a short explanation for the correct answer.
+Return strictly in JSON format like this:
+
+{
+  \"questions\": [
+    {
+      \"question_text\": \"Question here?\",
+      \"options\": [
+        {\"option_text\": \"Answer 1\", \"is_correct\": 1},
+        {\"option_text\": \"Answer 2\", \"is_correct\": 0},
+        {\"option_text\": \"Answer 3\", \"is_correct\": 0},
+        {\"option_text\": \"Answer 4\", \"is_correct\": 0}
+      ],
+      \"explanation\": \"Short explanation for the correct answer.\"
+    }
+  ]
+}
+
+Lesson material:
+{$content}
+";
+
+        // Call Gemini API (reuse existing method)
+        $rawText = app(\App\Http\Controllers\QuizController::class)->getGeminiReply($prompt);
+        Log::info('Practice quiz raw AI output', ['text' => $rawText]);
+
+        $data = json_decode($rawText, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $rawText = str_replace("'", '"', $rawText);
+            $data = json_decode($rawText, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return back()->with('error', 'AI returned invalid JSON.');
+            }
+        }
+
+        $questions = $data['questions'] ?? [];
+
+        // Save temporarily in session
+        session(['practice_quiz' => $questions]);
+
+        return redirect()->route('student.lessons.practice', $lesson)
+            ->with('success', 'Practice quiz generated!');
+    }
 }

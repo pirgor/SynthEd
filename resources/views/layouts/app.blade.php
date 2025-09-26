@@ -20,6 +20,8 @@
 
     <!-- Bootstrap 5 -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -54,8 +56,8 @@
 
                     @if (Auth::user()->user_role === 'student')
                         <li>
-                            <a class="nav-link sidebar-link">
-                                <i class="bi bi-journal-text me-2"></i> Course Content
+                            <a class="nav-link sidebar-link" href="{{ route('student.stud.lessons') }}">
+                                <i class="bi bi-journal-text me-2" ></i> Course Content
                             </a>
                         </li>
                         <li>
@@ -65,23 +67,28 @@
                         </li>
                     @elseif (Auth::user()->user_role === 'instructor')
                         <li>
-                            <a class="nav-link sidebar-link">
-                                <i class="bi bi-mortarboard me-2"></i> Manage Courses
+                            <a href="{{ route('instructor.dashboard') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-speedometer2 me-2"></i> Dashboard
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link" href="{{ route('instructor.quizzes.index') }}">
-                                <i class="bi bi-mortarboard me-2"></i> Quizzes
+                            <a href="{{ route('instructor.lessons.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-file-earmark-arrow-up me-2"></i> Course Content
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link">
-                                <i class="bi bi-people me-2"></i> Students
+                            <a href="{{ route('instructor.quizzes.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-clipboard-data me-2"></i> Assessment Management
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link sidebar-link">
+                            <a href="{{ route('instructor.analytics.index') }}" class="nav-link sidebar-link">
                                 <i class="bi bi-bar-chart me-2"></i> Analytics
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('instructor.progress.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-graph-up me-2"></i> Student Progress
                             </a>
                         </li>
                     @endif
@@ -123,6 +130,7 @@
             </main>
         </div>
     </div>
+    @yield('scripts')
 </body>
 
 </html>
