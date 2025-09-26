@@ -15,6 +15,7 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\LessonController;
+
 // -------------------- ROOT ROUTE --------------------
 // Redirects to login page when accessing the root URL
 Route::get('/', function () {
@@ -49,16 +50,15 @@ Route::middleware(['auth', 'role:student'])
         // View all grades for the student
         Route::get('grades', [StudentQuizController::class, 'grades'])->name('grades');
 
+        // Student course page
         Route::get('course', [LessonController::class, 'index'])->name('stud.lessons');
 
+        // Practice quizzes for lessons
         Route::get('lessons/{lesson}/practice', [QuizController::class, 'showPrac'])
             ->name('lessons.practice');
         Route::post('lessons/{lesson}/practice', [QuizController::class, 'generatePrac'])
             ->name('lessons.practice.generate');
-        Route::post(
-            'student/lessons/{lesson}/practice/generate',
-            [QuizController::class, 'generatePrac']
-        )
+        Route::post('lessons/{lesson}/practice/generate', [QuizController::class, 'generatePrac'])
             ->name('lessons.practice.generate');
     });
 
@@ -68,19 +68,8 @@ Route::middleware(['auth', 'role:instructor'])
     ->prefix('instructor') // Adds /instructor prefix to all routes in this group
     ->name('instructor.') // Adds 'instructor.' prefix to all route names in this group
     ->group(function () {
-<<<<<<< HEAD
-
-        // Instructor Home (Dashboard)
-
-        Route::get('/home', [App\Http\Controllers\Instructor\HomeController::class, 'index'])
-            ->name('home');
-
-        // CRUD for quizzes
-        Route::resource('quizzes', QuizController::class);
-=======
         // Instructor dashboard page
         Route::get('/dashboard', [InstructorController::class, 'dashboard'])->name('dashboard');
->>>>>>> e5b97ed7381e93a7e43d50b69a0ee7f7da0bd03b
 
         // Content management routes (CRUD for uploaded content)
         Route::resource('content', ContentController::class);
@@ -89,7 +78,8 @@ Route::middleware(['auth', 'role:instructor'])
 
         // Quiz management routes (CRUD for quizzes)
         Route::resource('quizzes', QuizController::class);
-        // Lessons
+
+        // Lesson management routes (CRUD for lessons)
         Route::resource('lessons', LessonController::class);
 
         // Quiz-specific routes (nested under quizzes)
@@ -140,5 +130,7 @@ Route::post('/send', [ChatController::class, 'send']);
 // -------------------- HOME ROUTE --------------------
 // Default home route after login
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// Lesson upload view route
 Route::get('uploads/{upload}/view', [LessonController::class, 'viewUpload'])
     ->name('uploads.view');
