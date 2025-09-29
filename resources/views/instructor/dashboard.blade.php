@@ -60,7 +60,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Avg. Score</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $stats['totalAttempts'] > 0 ? round(QuizAttempt::avg('score'), 1) : '0' }}
+                                {{ $stats['totalAttempts'] > 0 ? round(\App\Models\QuizAttempt::avg('score'), 1) : '0' }}
                             </div>
                         </div>
                         <div class="col-auto">

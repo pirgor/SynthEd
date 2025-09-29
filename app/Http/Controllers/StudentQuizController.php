@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Http;
-
+use App\Models\ProgressTracking;
 class StudentQuizController extends Controller
 {
     public function index()
@@ -45,7 +45,6 @@ class StudentQuizController extends Controller
         return view('student.quizzes.grades', compact('attempts'));
     }
 
-    // Submit answers
     // Submit answers
     public function submit(Request $request, Quiz $quiz)
     {
@@ -104,6 +103,17 @@ class StudentQuizController extends Controller
             'feedback' => $feedback,
         ]);
 
+        ProgressTracking::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'quiz_id' => $quiz->id,
+                'type' => 'quiz',
+            ],
+            [
+                'completed' => true,
+                'completed_at' => now(),
+            ]
+        );
         foreach ($answers as $questionId => $optionId) {
             \App\Models\QuizAnswer::create([
                 'quiz_attempt_id' => $attempt->id,

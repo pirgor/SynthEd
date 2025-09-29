@@ -36,13 +36,15 @@ class QuizController extends Controller
 
     public function edit(Quiz $quiz)
     {
-        return view('quizzes.edit', compact('quiz'));
-    }
+        // Get all lessons for dropdown
+        $lessons = Lesson::all();
 
+        return view('quizzes.edit', compact('quiz', 'lessons'));
+    }
     public function update(Request $request, Quiz $quiz)
     {
         $request->validate(['title' => 'required|string']);
-        $quiz->update($request->only('title', 'description'));
+        $quiz->update($request->only('title', 'description', 'deadline'));
         return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz updated!');
     }
 

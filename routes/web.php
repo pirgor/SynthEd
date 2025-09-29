@@ -9,96 +9,64 @@ use App\Http\Controllers\TtsSettingsController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\StudentQuizController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\NotificationController;
+// -------------------- ROOT ROUTE --------------------
+// Redirects to login page when accessing the root URL
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('auth.login');
-});
-
+// -------------------- AUTHENTICATION ROUTES --------------------
+// Provides routes for login, registration, password reset, etc.
 Auth::routes();
 
-// Authenticated User Routes
-Route::middleware(['auth'])->group(function () {
-    // Profile Routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    // TTS Settings Routes
-    Route::get('/settings/tts', [TtsSettingsController::class, 'edit'])->name('tts.settings.edit');
-    Route::put('/settings/tts', [TtsSettingsController::class, 'update'])->name('tts.settings.update');
-
-    // Speech Test Routes
-    Route::get('/speech-test', [SpeechController::class, 'index'])->name('speech.test');
-    Route::post('/speech-generate', [SpeechController::class, 'generate'])->name('speech.generate');
-
-    // Chat Routes
-    Route::post('/send', [ChatController::class, 'send']);
-
-    // Home Route
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-});
-
 // -------------------- STUDENT ROUTES --------------------
+// All routes in this group require authentication and student role
 Route::middleware(['auth', 'role:student'])
-    ->prefix('student')
-    ->name('student.')
+    ->prefix('student') // Adds /student prefix to all routes in this group
+    ->name('student.') // Adds 'student.' prefix to all route names in this group
     ->group(function () {
-        // List all quizzes for student
+        // Student quiz listing page
         Route::get('quizzes', [StudentQuizController::class, 'index'])->name('quizzes.index');
 
-        // Take a quiz
+        // Page for taking a specific quiz
         Route::get('quizzes/{quiz}/take', [StudentQuizController::class, 'take'])->name('quizzes.take');
 
         // Submit quiz answers
         Route::post('quizzes/{quiz}/submit', [StudentQuizController::class, 'submit'])->name('quizzes.submit');
 
-        // View results of a specific attempt
+        // View results of a specific quiz attempt
         Route::get('quizzes/{quiz}/results/{attempt}', [StudentQuizController::class, 'results'])->name('quizzes.results');
 
-        // View history of attempts
+        // View history of attempts for a specific quiz
         Route::get('quizzes/{quiz}/attempts', [StudentQuizController::class, 'attempts'])->name('quizzes.attempts');
 
-        // Grades
+        // View all grades for the student
         Route::get('grades', [StudentQuizController::class, 'grades'])->name('grades');
 
-        // Student course page
         Route::get('course', [LessonController::class, 'index'])->name('stud.lessons');
 
-        // Practice quizzes for lessons
         Route::get('lessons/{lesson}/practice', [QuizController::class, 'showPrac'])
             ->name('lessons.practice');
         Route::post('lessons/{lesson}/practice', [QuizController::class, 'generatePrac'])
             ->name('lessons.practice.generate');
-        Route::post('lessons/{lesson}/practice/generate', [QuizController::class, 'generatePrac'])
-            ->name('lessons.practice.generate');
+    
     });
 
 // -------------------- INSTRUCTOR ROUTES --------------------
+// All routes in this group require authentication and instructor role
 Route::middleware(['auth', 'role:instructor'])
-    ->prefix('instructor')
-    ->name('instructor.')
+    ->prefix('instructor') // Adds /instructor prefix to all routes in this group
+    ->name('instructor.') // Adds 'instructor.' prefix to all route names in this group
     ->group(function () {
-
-
         // Instructor dashboard page
         Route::get('/dashboard', [InstructorController::class, 'dashboard'])->name('dashboard');
+
         // Content management routes (CRUD for uploaded content)
         Route::resource('content', ContentController::class);
         // Download uploaded content file
@@ -106,8 +74,7 @@ Route::middleware(['auth', 'role:instructor'])
 
         // Quiz management routes (CRUD for quizzes)
         Route::resource('quizzes', QuizController::class);
-
-        // Lesson management routes (CRUD for lessons)
+        // Lessons
         Route::resource('lessons', LessonController::class);
 
         // Quiz-specific routes (nested under quizzes)
@@ -163,7 +130,5 @@ Route::post('/send', [ChatController::class, 'send']);
 // -------------------- HOME ROUTE --------------------
 // Default home route after login
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// Lesson upload view route
 Route::get('uploads/{upload}/view', [LessonController::class, 'viewUpload'])
     ->name('uploads.view');

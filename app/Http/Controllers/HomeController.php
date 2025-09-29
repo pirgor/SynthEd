@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Quiz;
+use App\Models\ProgressTracking;
+use App\Models\Lesson;
 
 class HomeController extends Controller
 {
@@ -26,6 +29,24 @@ class HomeController extends Controller
         $user = auth()->user();
         $unreadNotifications = $user->unreadNotifications()->count();
 
-        return view('home', compact('unreadNotifications'));
+        $userId = $user->id;
+        $totalActivities = Lesson::count() + Quiz::count();
+
+        $completedActivities = ProgressTracking::where('user_id', $userId)
+            ->where('completed', true)
+            ->count();
+
+        $progressPercent = $totalActivities > 0
+            ? round(($completedActivities / $totalActivities) * 100)
+            : 0;
+
+        // Fetch upcoming quizzes with deadlines
+        $upcomingDeadlines = Quiz::whereNotNull('deadline')
+            ->where('deadline', '>=', now())
+            ->orderBy('deadline', 'asc')
+            ->take(5) // show only next 5 deadlines
+            ->get();
+
+        return view('home', compact('unreadNotifications', 'progressPercent', 'upcomingDeadlines'));
     }
 }

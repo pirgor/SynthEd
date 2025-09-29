@@ -44,7 +44,7 @@
                 <!-- Top menu -->
                 <ul class="nav nav-pills flex-column mb-auto">
                     <li class="nav-item">
-                        <a class="nav-link sidebar-link" href="{{ route('profile.edit') }}">
+                        <a class="nav-link sidebar-link" href="{{ route('auth.edit') }}">
                             <i class="bi bi-person-circle me-2"></i> Profile
                         </a>
                     </li>

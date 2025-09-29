@@ -61,10 +61,5 @@
             @endforeach
         </div>
     @endforeach
-
-    <div class="mt-3">
-        <a href="{{ route('student.quizzes.attempts', $quiz) }}" class="btn btn-primary">View My Attempts</a>
-        <a href="{{ route('student.quizzes.index') }}" class="btn btn-secondary">Back to Quizzes</a>
-    </div>
 </div>
 @endsection

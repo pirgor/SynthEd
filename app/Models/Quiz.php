@@ -9,7 +9,9 @@ class Quiz extends Model
 {
     use HasFactory;
     protected $fillable = ['lesson_id', 'title', 'description', 'deadline'];
-
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
     public function lesson()
     {
         return $this->belongsTo(Lesson::class);

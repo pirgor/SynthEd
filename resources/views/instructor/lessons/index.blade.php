@@ -44,8 +44,7 @@
                             <ul class="list-unstyled">
                                 @forelse($lesson->uploads as $upload)
                                     <li class="mb-2 box-item">
-                                        <a href="{{ route('uploads.view', $upload->id) }}" target="_blank"
-                                            class="reading-link">
+                                        <a href="{{ route('uploads.view', $upload->id) }}" class="reading-link">
                                             READING: {{ pathinfo($upload->file_name, PATHINFO_FILENAME) }}
                                         </a>
                                     </li>
@@ -57,21 +56,89 @@
                             {{-- Lesson Quizzes --}}
                             <ul class="list-unstyled">
                                 @forelse($lesson->quizzes as $quiz)
-                                    <li class="mb-2 box-item">
-                                        <a href="#" class="reading-link">
-                                            Assessment: {{ $quiz->title }}
-                                        </a>
+                                    <li class="mb-2 box-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span>Assessment: {{ $quiz->title }}</span><br>
+                                            @if ($quiz->deadline)
+                                                <small class="text-muted">
+                                                    Deadline:
+                                                    {{ \Carbon\Carbon::parse($quiz->deadline)->format('F d, Y h:i A') }}
+                                                </small>
+                                            @else
+                                                <small class="text-muted">No deadline</small>
+                                            @endif
+                                        </div>
+
+                                        @php
+                                            $hasAttempt = $quiz->attempts->isNotEmpty();
+                                            $deadlinePassed = $quiz->deadline && now()->greaterThan($quiz->deadline);
+                                        @endphp
+
+                                        <div class="d-flex gap-2">
+                                            @if (!$hasAttempt && !$deadlinePassed)
+                                                <a href="{{ route('student.quizzes.take', $quiz) }}"
+                                                    class="btn btn-primary btn-sm take-quiz-btn"
+                                                    data-title="{{ $quiz->title }}">
+                                                    Take Quiz
+                                                </a>
+                                            @else
+                                                <button class="btn btn-secondary btn-sm" disabled>
+                                                    Not Available
+                                                </button>
+                                            @endif
+
+                                            @php
+                                                $latestAttempt = $quiz
+                                                    ->attempts()
+                                                    ->where('user_id', auth()->id())
+                                                    ->latest()
+                                                    ->first();
+                                            @endphp
+
+                                            @if ($latestAttempt)
+                                                <a href="{{ route('student.quizzes.results', [$quiz->id, $latestAttempt->id]) }}"
+                                                    class="btn btn-info btn-sm">
+                                                    Results
+                                                </a>
+                                            @endif
+                                        </div>
                                     </li>
                                 @empty
                                     <li class="text-muted">No quizzes available</li>
                                 @endforelse
                             </ul>
-
-
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
     </div>
+
+    @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.querySelectorAll('.take-quiz-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const quizTitle = this.dataset.title;
+
+                    Swal.fire({
+                        title: 'Start Quiz?',
+                        html: `<p>You are about to start <strong>${quizTitle}</strong>.</p>
+                           <p><b>Note:</b> You only have <span style="color:red;">one attempt</span> for this quiz.</p>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, start now',
+                        cancelButtonText: 'Cancel',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url;
+                        }
+                    });
+                });
+            });
+        </script>
+    @endsection
+
 @endsection
