@@ -21,27 +21,53 @@ class QuestionController extends Controller
 
     public function store(Request $request, Quiz $quiz)
     {
-        //dd($request->all());
+        // Validate input
         $request->validate([
             'question_text' => 'required|string',
-            'options' => 'required|array|min:2',
-            'options.*.option_text' => 'required|string',
-            'options.*.is_correct' => 'required|boolean'
+            'type' => 'required|string|in:multiple_choice,multiple_answers,true_false,identification,matching',
+            'options' => 'sometimes|array',
+            'options.*.option_text' => 'required_with:options|string',
+            'options.*.is_correct' => 'nullable|boolean',
+            'options.*.match_key' => 'nullable|string',
+            'answer_text' => 'required_if:type,identification|string',
+            'correct_options' => 'nullable|array', // for multiple_answers
+            'correct_options.*' => 'integer'
         ]);
 
+        // Create question
         $question = $quiz->questions()->create([
-            'question_text' => $request->question_text
+            'question_text' => $request->question_text,
+            'type' => $request->type,
         ]);
 
-        foreach ($request->options as $option) {
+        // Handle question types
+        if (in_array($request->type, ['multiple_choice', 'true_false', 'matching'])) {
+            foreach ($request->options as $option) {
+                $question->options()->create([
+                    'option_text' => $option['option_text'],
+                    'is_correct' => $option['is_correct'] ?? 0,
+                    'match_key' => $option['match_key'] ?? null,
+                ]);
+            }
+        } elseif ($request->type === 'multiple_answers') {
+            foreach ($request->options as $index => $option) {
+                $question->options()->create([
+                    'option_text' => $option['option_text'],
+                    'is_correct' => in_array($index, $request->correct_options ?? []) ? 1 : 0,
+                    'match_key' => null,
+                ]);
+            }
+        } elseif ($request->type === 'identification') {
             $question->options()->create([
-                'option_text' => $option['option_text'],
-                'is_correct' => $option['is_correct']
+                'option_text' => $request->answer_text,
+                'is_correct' => 1
             ]);
         }
 
-        return redirect()->route('quizzes.questions.index', $quiz)->with('success', 'Question added!');
+        return redirect()->route('instructor.quizzes.questions.index', $quiz)
+            ->with('success', 'Question added!');
     }
+
 
     public function edit(Quiz $quiz, Question $question)
     {
@@ -63,12 +89,12 @@ class QuestionController extends Controller
             $question->options()->create($option);
         }
 
-        return redirect()->route('quizzes.questions.index', $quiz)->with('success', 'Question updated!');
+        return redirect()->route('instructor.quizzes.questions.index', $quiz)->with('success', 'Question updated!');
     }
 
     public function destroy(Quiz $quiz, Question $question)
     {
         $question->delete();
-        return redirect()->route('quizzes.questions.index', $quiz)->with('success', 'Question deleted!');
+        return redirect()->route('instructor.quizzes.questions.index', $quiz)->with('success', 'Question deleted!');
     }
 }

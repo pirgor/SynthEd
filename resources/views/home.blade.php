@@ -29,6 +29,12 @@
                         @else
                             <ul class="list-group list-group-flush">
                                 @foreach ($upcomingDeadlines as $quiz)
+                                    @php
+                                        $hasAttempted = \App\Models\QuizAttempt::where('user_id', auth()->id())
+                                            ->where('quiz_id', $quiz->id)
+                                            ->exists();
+                                    @endphp
+
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <span class="fw-bold">{{ $quiz->title }}</span><br>
@@ -42,16 +48,9 @@
                                                 {{ \Carbon\Carbon::parse($quiz->deadline)->diffForHumans() }}
                                             </span>
 
-                                            @php
-                                                $hasAttempted = \App\Models\QuizAttempt::where('user_id', auth()->id())
-                                                    ->where('quiz_id', $quiz->id)
-                                                    ->exists();
-                                            @endphp
-
                                             @if (!$hasAttempted)
                                                 <a href="{{ route('student.quizzes.take', $quiz) }}"
-                                                    class="btn btn-primary btn-sm take-quiz-btn"
-                                                    data-title="{{ $quiz->title }}">
+                                                    class="btn btn-primary btn-sm">
                                                     Take Quiz
                                                 </a>
                                             @else

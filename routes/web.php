@@ -55,7 +55,8 @@ Route::middleware(['auth', 'role:student'])
             ->name('lessons.practice');
         Route::post('lessons/{lesson}/practice', [QuizController::class, 'generatePrac'])
             ->name('lessons.practice.generate');
-    
+        Route::post('/lessons/{lesson}/mark-read', [LessonController::class, 'markRead'])
+            ->name('student.lessons.markRead');
     });
 
 // -------------------- INSTRUCTOR ROUTES --------------------

@@ -7,8 +7,29 @@ use App\Models\Lesson;
 use App\Models\LessonUpload;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Log;
+use App\Models\ProgressTracking;
+
 class LessonController extends Controller
 {
+    public function markRead(Lesson $lesson)
+    {
+        ProgressTracking::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'lesson_id' => $lesson->id,
+                'type' => 'reading',
+            ],
+            [
+                'completed' => true,
+                'completed_at' => now(),
+            ]
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Lesson marked as read!',
+        ]);
+    }
     public function index()
     {
         $lessons = Lesson::with('uploads', 'quizzes')->orderBy('id')->get();
@@ -69,7 +90,4 @@ class LessonController extends Controller
         $lesson = $upload->lesson;
         return view('instructor.lessons.view', compact('upload', 'lesson'));
     }
-
-
-    
 }

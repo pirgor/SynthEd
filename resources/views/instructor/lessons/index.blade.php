@@ -43,10 +43,27 @@
                             {{-- Lesson Files --}}
                             <ul class="list-unstyled">
                                 @forelse($lesson->uploads as $upload)
-                                    <li class="mb-2 box-item">
+                                    @php
+                                        $uploadProgress = \App\Models\ProgressTracking::where([
+                                            'user_id' => auth()->id(),
+                                            'lesson_id' => $lesson->id,
+                                            'type' => 'reading',
+                                        ])->first();
+                                    @endphp
+
+                                    <li class="mb-2 box-item d-flex justify-content-between align-items-center">
                                         <a href="{{ route('uploads.view', $upload->id) }}" class="reading-link">
                                             READING: {{ pathinfo($upload->file_name, PATHINFO_FILENAME) }}
                                         </a>
+
+                                        @if (!$uploadProgress || !$uploadProgress->completed)
+                                            <button class="btn btn-success btn-sm mark-lesson-read-btn"
+                                                data-lesson-id="{{ $lesson->id }}">
+                                                Mark as Read
+                                            </button>
+                                        @else
+                                            <span class="badge bg-success">Completed</span>
+                                        @endif
                                     </li>
                                 @empty
                                     <li class="text-muted">No files uploaded</li>
@@ -134,6 +151,52 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             window.location.href = url;
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            document.querySelectorAll('.mark-lesson-read-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const lessonId = this.dataset.lessonId;
+                    const button = this;
+
+                    Swal.fire({
+                        title: 'Mark lesson as read?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, mark as read',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/student/lessons/${lessonId}/mark-read`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({})
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        Swal.fire({
+                                            title: 'Marked!',
+                                            text: data.message,
+                                            icon: 'success',
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        });
+                                        // Change button to completed badge
+                                        button.outerHTML =
+                                            '<span class="badge bg-success">Completed</span>';
+                                    }
+                                })
+                                .catch(err => {
+                                    Swal.fire('Error', 'Something went wrong', 'error');
+                                });
                         }
                     });
                 });

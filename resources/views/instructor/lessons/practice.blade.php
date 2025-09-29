@@ -49,6 +49,8 @@
 <script>
 document.getElementById('generateQuizForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    const form = this;
+
     Swal.fire({
         title: 'Generate Practice Quiz?',
         text: 'This will generate new questions from the lesson material.',
@@ -57,7 +59,18 @@ document.getElementById('generateQuizForm').addEventListener('submit', function(
         confirmButtonText: 'Yes, generate',
         cancelButtonText: 'Cancel'
     }).then((result) => {
-        if (result.isConfirmed) this.submit();
+        if (result.isConfirmed) {
+            // Show loading alert
+            Swal.fire({
+                title: 'Generating Quiz...',
+                text: 'Please wait while we fetch questions.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                    form.submit(); // Submit the form
+                }
+            });
+        }
     });
 });
 

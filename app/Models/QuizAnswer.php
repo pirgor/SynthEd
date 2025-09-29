@@ -12,7 +12,8 @@ class QuizAnswer extends Model
     protected $fillable = [
         'quiz_attempt_id',
         'question_id',
-        'option_id'
+        'option_id',
+        'answer_text'
     ];
 
     public function attempt()
