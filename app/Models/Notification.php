@@ -14,19 +14,38 @@ class Notification extends Model
         'type',
         'title',
         'message',
-        'read',
+        'is_read',
         'read_at',
         'data',
     ];
 
     protected $casts = [
         'data' => 'array',
-        'read' => 'boolean',
+        'is_read' => 'boolean',
         'read_at' => 'datetime',
     ];
 
+    // Announcement types
+    const TYPE_ANNOUNCEMENT = 'announcement';
+    const TYPE_SYSTEM = 'system';
+    const TYPE_QUIZ_SUBMITTED = 'quiz_submitted';
+    const TYPE_NEW_STUDENT = 'new_student';
+    const TYPE_DEADLINE_APPROACHING = 'deadline_approaching';
+
     public function user()
     {
-         return $this->notifications()->where('read', false);
+        return $this->belongsTo(User::class);
+    }
+
+    // Scope to get only announcements
+    public function scopeAnnouncements($query)
+    {
+        return $query->where('type', self::TYPE_ANNOUNCEMENT);
+    }
+
+    // Scope to get unread notifications
+    public function scopeUnread($query)
+    {
+        return $query->where('is_read', false);
     }
 }

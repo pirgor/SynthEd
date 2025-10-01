@@ -50,7 +50,6 @@ class User extends Authenticatable
         return $this->hasMany(QuizAttempt::class);
     }
 
-    // 👇 Add these new relationships here
     public function notifications()
     {
         return $this->hasMany(Notification::class);

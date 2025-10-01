@@ -17,6 +17,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AnnouncementController;
+
 // -------------------- ROOT ROUTE --------------------
 // Redirects to login page when accessing the root URL
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -68,6 +70,14 @@ Route::middleware(['auth', 'role:instructor'])
         // Instructor dashboard page
         Route::get('/dashboard', [InstructorController::class, 'dashboard'])->name('dashboard');
 
+        // Announcements
+        Route::resource('announcements', AnnouncementController::class);
+
+        // Notifications
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+        Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+
         // Content management routes (CRUD for uploaded content)
         Route::resource('content', ContentController::class);
         // Download uploaded content file
@@ -102,11 +112,6 @@ Route::middleware(['auth', 'role:instructor'])
         Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
         Route::get('/progress/{user}', [ProgressController::class, 'show'])->name('progress.show');
         Route::get('/progress/quiz/{quiz}', [ProgressController::class, 'quizReport'])->name('progress.quiz');
-
-        // Notifications
-        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-        Route::post('notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
-        Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     });
 
 // -------------------- PROFILE ROUTES --------------------

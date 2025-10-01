@@ -76,6 +76,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('instructor.announcements.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-megaphone me-2"></i> Announcements
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('instructor.lessons.index') }}" class="nav-link sidebar-link">
                                 <i class="bi bi-file-earmark-arrow-up me-2"></i> Course Content
                             </a>
@@ -157,7 +162,6 @@
     // Check every 30 seconds
     setInterval(updateNotificationCount, 30000);
 </script>
-
 
 </body>
 

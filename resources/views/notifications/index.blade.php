@@ -23,7 +23,7 @@
                     @if ($notifications->count() > 0)
                         <div class="list-group">
                             @foreach ($notifications as $notification)
-                                <div class="list-group-item list-group-item-action {{ !$notification->read ? 'list-group-item-info' : '' }}">
+                                <div class="list-group-item list-group-item-action {{ !$notification->is_read ? 'list-group-item-info' : '' }}">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{ $notification->title }}</h5>
                                         <small>{{ $notification->created_at->diffForHumans() }}</small>
@@ -37,6 +37,11 @@
                                                 <i class="bi bi-person-plus me-1"></i> New Student
                                             @elseif ($notification->type == 'deadline_approaching')
                                                 <i class="bi bi-clock me-1"></i> Deadline Approaching
+                                            @elseif ($notification->type == 'announcement')
+                                                <i class="bi bi-megaphone me-1"></i> Announcement
+                                                @if(isset($notification->data['sender_name']))
+                                                    by {{ $notification->data['sender_name'] }}
+                                                @endif
                                             @endif
                                         </small>
                                         @if (!$notification->is_read)
