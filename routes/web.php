@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:student'])
             ->name('lessons.practice.generate');
         Route::post('/lessons/{lesson}/mark-read', [LessonController::class, 'markRead'])
             ->name('student.lessons.markRead');
+        Route::post('/summary/generate', [QuizController::class, 'generateSummary'])->name('summary.generate');
     });
 
 // -------------------- INSTRUCTOR ROUTES --------------------
