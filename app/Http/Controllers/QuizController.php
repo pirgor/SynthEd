@@ -316,4 +316,36 @@ Lesson material:
         return redirect()->route('student.lessons.practice', $lesson)
             ->with('success', 'Practice quiz generated!');
     }
+
+    public function generateSummary(Request $request, Lesson $lesson)
+    {
+        $text = $request->input('text');
+
+        if (empty($text)) {
+            return response()->json([
+                'error' => 'No text provided'
+            ], 400);
+        }
+
+        $prompt = "
+    You are a teaching assistant.
+    Summarize the following lesson material into a clear and concise study guide.
+    Make it easy for students to review key concepts.
+
+    Lesson material:
+    {$text}
+    ";
+
+        // Call Gemini (or whichever AI service you’re using)
+        $summary = $this->getGeminiReply($prompt);
+
+        // Optional: save to DB
+        $lesson->update([
+            'ai_summary' => $summary
+        ]);
+
+        return response()->json([
+            'summary' => $summary
+        ]);
+    }
 }

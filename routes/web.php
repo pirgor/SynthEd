@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:student'])
             ->name('lessons.practice.generate');
         Route::post('/lessons/{lesson}/mark-read', [LessonController::class, 'markRead'])
             ->name('student.lessons.markRead');
+        Route::post('/summary/generate', [QuizController::class, 'generateSummary'])->name('summary.generate');
     });
 
 // -------------------- INSTRUCTOR ROUTES --------------------
@@ -87,7 +88,8 @@ Route::middleware(['auth', 'role:instructor'])
         Route::resource('quizzes', QuizController::class);
         // Lessons
         Route::resource('lessons', LessonController::class);
-
+        Route::get('/lessons/{lesson}/edit', [LessonController::class, 'edit'])->name('lessons.edit');
+        Route::put('/lessons/{lesson}', [LessonController::class, 'update'])->name('lessons.update');
         // Quiz-specific routes (nested under quizzes)
         Route::prefix('quizzes/{quiz}')->as('quizzes.')->group(function () {
             // Question management routes (CRUD for quiz questions)

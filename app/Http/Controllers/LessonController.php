@@ -90,4 +90,61 @@ class LessonController extends Controller
         $lesson = $upload->lesson;
         return view('instructor.lessons.view', compact('upload', 'lesson'));
     }
+
+    public function edit(Lesson $lesson)
+    {
+        $lesson->load('uploads'); // eager load uploads for display
+        return view('instructor.lessons.edit', compact('lesson'));
+    }
+
+    public function update(Request $request, Lesson $lesson)
+    {
+        $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'file'        => 'nullable|file|mimes:pdf,docx,pptx,txt,mp4|max:20480',
+        ]);
+
+        // Update lesson details
+        $lesson->update([
+            'title'       => $request->title,
+            'description' => $request->description,
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('lesson_uploads', 'public');
+
+            $text = null;
+            if ($file->getClientOriginalExtension() === 'pdf') {
+                try {
+                    $parser = new \Smalot\PdfParser\Parser();
+                    $pdf    = $parser->parseFile($file->getRealPath());
+                    $text   = $pdf->getText();
+                } catch (\Exception $e) {
+                    Log::error("PDF parsing failed: " . $e->getMessage());
+                }
+            }
+
+            // Replace existing upload (if any) OR create new one
+            $upload = $lesson->uploads()->first();
+            if ($upload) {
+                $upload->update([
+                    'file_path'     => $path,
+                    'file_name'     => $file->getClientOriginalName(),
+                    'extracted_text' => $text,
+                ]);
+            } else {
+                $lesson->uploads()->create([
+                    'file_path'     => $path,
+                    'file_name'     => $file->getClientOriginalName(),
+                    'extracted_text' => $text,
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('instructor.lessons.edit', $lesson->id)
+            ->with('success', 'Lesson updated successfully!');
+    }
 }
