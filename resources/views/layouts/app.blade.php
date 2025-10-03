@@ -25,15 +25,23 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        .flex-grow-1 {
+            margin-left: 250px;
+            /* same as sidebar width */
+        }
+    </style>
+
 </head>
 
 <body>
     <div id="app" class="d-flex">
         @auth
-            <!-- Sidebar -->
+
             <!-- Sidebar -->
             <nav class="d-flex flex-column flex-shrink-0 p-3 shadow"
-                style="width: 250px; min-height: 100vh; background-color: #224D3D;">
+                style="width: 250px; height: 100vh; position: fixed; top: 0; left: 0; background-color: #224D3D;">
+
                 <a href="{{ url('/') }}"
                     class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none">
                     <i class="bi bi-book fs-2 me-2 text-white"></i>
@@ -53,7 +61,8 @@
                         <a class="nav-link sidebar-link" href="{{ route('instructor.notifications.index') }}">
                             <i class="bi bi-bell me-2"></i> Notifications
                             @if (auth()->user()->unreadNotifications()->count() > 0)
-                                <span class="badge bg-danger ms-auto">{{ auth()->user()->unreadNotifications()->count() }}</span>
+                                <span
+                                    class="badge bg-danger ms-auto">{{ auth()->user()->unreadNotifications()->count() }}</span>
                             @endif
                         </a>
                     </li>
@@ -141,27 +150,27 @@
     </div>
     @yield('scripts')
 
-<script>
-    // Update notification count in sidebar
-    function updateNotificationCount() {
-        fetch('{{ route("instructor.notifications.index") }}')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const count = doc.querySelector('.badge.bg-danger')?.textContent || 0;
+    <script>
+        // Update notification count in sidebar
+        function updateNotificationCount() {
+            fetch('{{ route('instructor.notifications.index') }}')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const count = doc.querySelector('.badge.bg-danger')?.textContent || 0;
 
-                const badge = document.querySelector('.nav-link[href*="notifications"] .badge');
-                if (badge) {
-                    badge.textContent = count;
-                    badge.style.display = count > 0 ? 'inline-block' : 'none';
-                }
-            });
-    }
+                    const badge = document.querySelector('.nav-link[href*="notifications"] .badge');
+                    if (badge) {
+                        badge.textContent = count;
+                        badge.style.display = count > 0 ? 'inline-block' : 'none';
+                    }
+                });
+        }
 
-    // Check every 30 seconds
-    setInterval(updateNotificationCount, 30000);
-</script>
+        // Check every 30 seconds
+        setInterval(updateNotificationCount, 30000);
+    </script>
 
 </body>
 
