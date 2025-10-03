@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AnnouncementController extends Controller
 {
     public function index()
     {
+        // Get unique announcements by grouping them
         $announcements = Notification::announcements()
-            ->with('user')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->unique(function ($notification) {
+                return $notification->data['announcement_id'] ?? $notification->id;
+            });
             
         return view('instructor.announcements.index', compact('announcements'));
     }
@@ -33,6 +37,9 @@ class AnnouncementController extends Controller
             'student_ids' => 'required_if:recipients,specific|array',
             'student_ids.*' => 'exists:users,id',
         ]);
+
+        // Generate a unique ID for this announcement to link all notifications
+        $announcementId = uniqid('announcement_' . time());
 
         // Get all students if "all" is selected
         $recipients = [];
@@ -54,6 +61,7 @@ class AnnouncementController extends Controller
                     'sender_id' => auth()->id(),
                     'sender_name' => auth()->user()->name,
                     'recipients' => $request->recipients,
+                    'announcement_id' => $announcementId,
                 ]
             ]);
         }
@@ -86,10 +94,17 @@ class AnnouncementController extends Controller
             'message' => 'required|string',
         ]);
 
-        $announcement->update([
-            'title' => $request->title,
-            'message' => $request->message,
-        ]);
+        // Update all notifications with the same announcement_id
+        if (isset($announcement->data['announcement_id'])) {
+            $announcementId = $announcement->data['announcement_id'];
+            
+            Notification::where('type', Notification::TYPE_ANNOUNCEMENT)
+                ->whereJsonContains('data->announcement_id', $announcementId)
+                ->update([
+                    'title' => $request->title,
+                    'message' => $request->message,
+                ]);
+        }
 
         return redirect()->route('instructor.announcements.index')
             ->with('success', 'Announcement updated successfully!');
@@ -103,7 +118,17 @@ class AnnouncementController extends Controller
                 ->with('error', 'You are not authorized to delete this announcement.');
         }
 
-        $announcement->delete();
+        // Find and delete all notifications with the same announcement_id
+        if (isset($announcement->data['announcement_id'])) {
+            $announcementId = $announcement->data['announcement_id'];
+            
+            Notification::where('type', Notification::TYPE_ANNOUNCEMENT)
+                ->whereJsonContains('data->announcement_id', $announcementId)
+                ->delete();
+        } else {
+            // If no announcement_id is found, just delete this notification
+            $announcement->delete();
+        }
 
         return redirect()->route('instructor.announcements.index')
             ->with('success', 'Announcement deleted successfully!');

@@ -42,7 +42,7 @@
                         @foreach ($announcements as $announcement)
                             <tr>
                                 <td>{{ $announcement->title }}</td>
-                                <td>{{ Str::limit($announcement->message, 100) }}</td>
+                                <td>{{ \Illuminate\Support\Str::limit($announcement->message, 100) }}</td>
                                 <td>{{ $announcement->data['sender_name'] ?? 'System' }}</td>
                                 <td>
                                     @if(isset($announcement->data['recipients']) && $announcement->data['recipients'] === 'all')
@@ -59,7 +59,7 @@
                                     <form action="{{ route('instructor.announcements.destroy', $announcement->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this announcement?')">
+                                        <button type="submit" class="btn btn-sm btn-danger delete-announcement-btn">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
                                     </form>
@@ -73,3 +73,31 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-announcement-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this announcement!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.closest('form').submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+@endpush

@@ -48,4 +48,16 @@ class Notification extends Model
     {
         return $query->where('is_read', false);
     }
+    
+    // Get all notifications with the same announcement_id
+    public function getRelatedAnnouncementsAttribute()
+    {
+        if (isset($this->data['announcement_id'])) {
+            return self::where('type', self::TYPE_ANNOUNCEMENT)
+                ->whereJsonContains('data->announcement_id', $this->data['announcement_id'])
+                ->get();
+        }
+        
+        return collect([$this]);
+    }
 }
