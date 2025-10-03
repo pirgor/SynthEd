@@ -12,7 +12,7 @@
                             <span class="badge bg-danger ms-2">{{ $unreadCount }}</span>
                         @endif
                     </h4>
-                    <form action="{{ route('instructor.notifications.mark-all-read') }}" method="POST">
+                    <form action="{{ route('notifications.mark-all-read') }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-check-all me-1"></i> Mark All as Read
@@ -45,7 +45,7 @@
                                             @endif
                                         </small>
                                         @if (!$notification->is_read)
-                                            <form action="{{ route('instructor.notifications.mark-read', $notification) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('notifications.mark-read', $notification) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary">
                                                     Mark as Read

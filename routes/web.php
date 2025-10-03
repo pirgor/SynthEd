@@ -74,11 +74,6 @@ Route::middleware(['auth', 'role:instructor'])
         // Announcements
         Route::resource('announcements', AnnouncementController::class);
 
-        // Notifications
-        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-        Route::post('notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
-        Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
-
         // Content management routes (CRUD for uploaded content)
         Route::resource('content', ContentController::class);
         // Download uploaded content file
@@ -140,3 +135,8 @@ Route::post('/send', [ChatController::class, 'send']);
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('uploads/{upload}/view', [LessonController::class, 'viewUpload'])
     ->name('uploads.view');
+
+// Notifications
+Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');

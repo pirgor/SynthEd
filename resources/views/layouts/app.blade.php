@@ -58,7 +58,7 @@
                     </li>
                     <!-- Replace the existing notifications link with this -->
                     <li>
-                        <a class="nav-link sidebar-link" href="{{ route('instructor.notifications.index') }}">
+                        <a class="nav-link sidebar-link" href="{{ route('notifications.index') }}">
                             <i class="bi bi-bell me-2"></i> Notifications
                             @if (auth()->user()->unreadNotifications()->count() > 0)
                                 <span
@@ -153,7 +153,7 @@
     <script>
         // Update notification count in sidebar
         function updateNotificationCount() {
-            fetch('{{ route('instructor.notifications.index') }}')
+            fetch('{{ route('notifications.index') }}')
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
