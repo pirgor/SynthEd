@@ -16,6 +16,7 @@
                     <a href="{{ route('instructor.quizzes.create') }}" class="btn btn-info">
                         <i class="bi bi-plus-circle"></i> Create Quiz
                     </a>
+
                 </div>
             @endif
 
@@ -39,6 +40,17 @@
                             @if ($lesson->description)
                                 <p class="text-muted">{{ $lesson->description }}</p>
                             @endif
+                            
+                            {{-- Edit button for instructors --}}
+                            @if (Auth::user()->user_role === 'instructor')
+                                <div class="mb-3">
+                                    <a href="{{ route('instructor.lessons.edit', $lesson->id) }}"
+                                        class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Edit Lesson
+                                    </a>
+                                </div>
+                            @endif
+
 
                             {{-- Lesson Files --}}
                             <ul class="list-unstyled">
