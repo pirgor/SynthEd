@@ -26,11 +26,13 @@ class QuizController extends Controller
 
     public function store(Request $request)
     {
+        
         $request->validate([
             'title' => 'required|string',
             'lesson_id' => 'required|exists:lessons,id', // validate lesson exists
+            'deadline' => 'required'
         ]);
-        Quiz::create($request->only('title', 'description', 'lesson_id'));
+        Quiz::create($request->only('title', 'description', 'lesson_id','deadline'));
         return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz created!');
     }
 
