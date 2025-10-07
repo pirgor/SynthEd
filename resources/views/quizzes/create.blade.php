@@ -23,8 +23,7 @@
         {{-- Deadline --}}
         <div class="mb-3">
             <label for="deadline" class="form-label fw-bold">Deadline</label>
-            <input type="datetime-local" name="deadline" id="deadline" class="form-control"
-                value="{{ old('deadline', isset($quiz) ? $quiz->deadline?->format('Y-m-d\TH:i') : '') }}">
+            <input type="datetime-local" name="deadline" id="deadline" class="form-control">
             <div class="form-text">Students will not be able to take the quiz after the deadline.</div>
         </div>
 
