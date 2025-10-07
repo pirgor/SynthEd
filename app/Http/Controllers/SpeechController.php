@@ -40,7 +40,7 @@ class SpeechController extends Controller
                 'Content-Type' => 'application/json',
             ])->post("https://api.elevenlabs.io/v1/text-to-speech/{$userSettings->voice_id}", [
                 'text' => $request->input('text'),
-                'model_id' => 'eleven_multilingual_v2',
+                'model_id' => 'eleven_turbo_v2_5',
                 'output_format' => 'mp3_44100_128',
                 'voice_settings' => [
                     'speed' => (float) $userSettings->speed,

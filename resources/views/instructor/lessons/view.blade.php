@@ -71,7 +71,7 @@
                 didOpen: () => Swal.showLoading()
             });
 
-            fetch("{{ route('speech.generate') }}", {
+            fetch("/speech-generate", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
