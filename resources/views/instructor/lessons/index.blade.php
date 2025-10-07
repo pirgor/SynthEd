@@ -99,7 +99,7 @@
                                         </div>
 
                                         @php
-                                            $hasAttempt = $quiz->attempts->isNotEmpty();
+                                            $hasAttempt = $quiz->attempts->where('user_id', auth()->id())->isNotEmpty();
                                             $deadlinePassed = $quiz->deadline && now()->greaterThan($quiz->deadline);
                                         @endphp
 
