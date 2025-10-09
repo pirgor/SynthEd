@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AnnouncementController extends Controller
 {
@@ -24,8 +23,8 @@ class AnnouncementController extends Controller
 
     public function create()
     {
-        $students = User::where('user_role', 'student')->get();
-        return view('instructor.announcements.create', compact('students'));
+        // No need to pass students anymore
+        return view('instructor.announcements.create');
     }
 
     public function store(Request $request)
@@ -33,23 +32,15 @@ class AnnouncementController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'message' => 'required|string',
-            'recipients' => 'required|string|in:all,specific',
-            'student_ids' => 'required_if:recipients,specific|array',
-            'student_ids.*' => 'exists:users,id',
         ]);
 
         // Generate a unique ID for this announcement to link all notifications
         $announcementId = uniqid('announcement_' . time());
 
-        // Get all students if "all" is selected
-        $recipients = [];
-        if ($request->recipients === 'all') {
-            $recipients = User::where('user_role', 'student')->pluck('id')->toArray();
-        } else {
-            $recipients = $request->student_ids;
-        }
+        // Get all students
+        $recipients = User::where('user_role', 'student')->pluck('id')->toArray();
 
-        // Create a notification for each recipient
+        // Create a notification for each student
         foreach ($recipients as $userId) {
             Notification::create([
                 'user_id' => $userId,
@@ -60,7 +51,7 @@ class AnnouncementController extends Controller
                 'data' => [
                     'sender_id' => auth()->id(),
                     'sender_name' => auth()->user()->name,
-                    'recipients' => $request->recipients,
+                    'recipients' => 'all', // Always set to 'all'
                     'announcement_id' => $announcementId,
                 ]
             ]);

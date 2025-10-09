@@ -45,11 +45,7 @@
                                 <td>{{ \Illuminate\Support\Str::limit($announcement->message, 100) }}</td>
                                 <td>{{ $announcement->data['sender_name'] ?? 'System' }}</td>
                                 <td>
-                                    @if(isset($announcement->data['recipients']) && $announcement->data['recipients'] === 'all')
-                                        <span class="badge badge-success">All Students</span>
-                                    @else
-                                        <span class="badge badge-info">Specific Students</span>
-                                    @endif
+                                    <span class="badge badge-success">All Students</span>
                                 </td>
                                 <td>{{ $announcement->created_at->format('M d, Y') }}</td>
                                 <td>

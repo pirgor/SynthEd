@@ -40,15 +40,9 @@
                 
                 <div class="form-group">
                     <label>Recipients</label>
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="recipients_all" name="recipients" value="all" class="custom-control-input" {{ isset($announcement->data['recipients']) && $announcement->data['recipients'] === 'all' ? 'checked' : '' }} disabled>
-                        <label class="custom-control-label" for="recipients_all">All Students</label>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> This announcement is sent to all students.
                     </div>
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="recipients_specific" name="recipients" value="specific" class="custom-control-input" {{ isset($announcement->data['recipients']) && $announcement->data['recipients'] === 'specific' ? 'checked' : '' }} disabled>
-                        <label class="custom-control-label" for="recipients_specific">Specific Students</label>
-                    </div>
-                    <small class="form-text text-muted">Note: Recipients cannot be changed after creation.</small>
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Update Announcement</button>

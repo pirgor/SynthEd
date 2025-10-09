@@ -38,28 +38,9 @@
                 
                 <div class="form-group">
                     <label>Recipients</label>
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="recipients_all" name="recipients" value="all" class="custom-control-input" checked>
-                        <label class="custom-control-label" for="recipients_all">All Students</label>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> This announcement will be sent to all students.
                     </div>
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="recipients_specific" name="recipients" value="specific" class="custom-control-input">
-                        <label class="custom-control-label" for="recipients_specific">Specific Students</label>
-                    </div>
-                </div>
-                
-                <div class="form-group" id="student-selection" style="display: none;">
-                    <label for="student_ids">Select Students</label>
-                    <select class="form-control select2" id="student_ids" name="student_ids[]" multiple>
-                        @foreach ($students as $student)
-                            <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->email }})</option>
-                        @endforeach
-                    </select>
-                    @error('student_ids')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
                 </div>
                 
                 <button type="submit" class="btn btn-primary">Create Announcement</button>
@@ -67,31 +48,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const recipientsAll = document.getElementById('recipients_all');
-        const recipientsSpecific = document.getElementById('recipients_specific');
-        const studentSelection = document.getElementById('student-selection');
-        
-        recipientsAll.addEventListener('change', function() {
-            if (this.checked) {
-                studentSelection.style.display = 'none';
-            }
-        });
-        
-        recipientsSpecific.addEventListener('change', function() {
-            if (this.checked) {
-                studentSelection.style.display = 'block';
-            }
-        });
-        
-        // Initialize Select2
-        $('.select2').select2();
-    });
-</script>
-@endpush
 @endsection
