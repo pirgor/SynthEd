@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+
 class UserSeeder extends Seeder
 {
     /**
@@ -14,23 +15,27 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Instructor account
+        /*
         User::create([
             'name' => 'Instructor One',
-            'student_id' => null, // instructors don’t need student_id
+            'student_id' => null,
             'email' => 'instructor@example.com',
             'password' => Hash::make('password123'),
             'user_role' => 'instructor',
-            'profile_picture' => null, // optional
+            'profile_picture' => null,
         ]);
-
-        // Student account
-        User::create([
-            'name' => 'Student One',
-            'student_id' => 'STU1001',
-            'email' => 'student@example.com',
-            'password' => Hash::make('password123'),
-            'user_role' => 'student',
-            'profile_picture' => null, // optional
-        ]);
+        */
+        
+        // Generate 20 student accounts
+        for ($i = 1; $i <= 20; $i++) {
+            User::create([
+                'name' => 'Student ' . $i,
+                'student_id' => 'STU' . str_pad($i, 4, '0', STR_PAD_LEFT),
+                'email' => 'student' . $i . '@example.com',
+                'password' => Hash::make('password123'),
+                'user_role' => 'student',
+                'profile_picture' => null,
+            ]);
+        }
     }
 }
