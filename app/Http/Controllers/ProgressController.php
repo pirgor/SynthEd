@@ -21,15 +21,22 @@ class ProgressController extends Controller
 
     public function show(User $user)
     {
+        // Add withCount and withAvg to include total attempts and average score
+        $user->loadCount('quizAttempts')
+            ->loadAvg('quizAttempts as avg_score', 'score');
+
+        // Fetch all quiz attempts by the user (with quiz details)
         $attempts = $user->quizAttempts()
             ->with('quiz')
             ->latest()
             ->get();
 
+        // Fetch quizzes with question count
         $quizzes = Quiz::withCount('questions')->get();
 
         return view('instructor.progress.show', compact('user', 'attempts', 'quizzes'));
     }
+
 
     public function quizReport(Quiz $quiz)
     {
