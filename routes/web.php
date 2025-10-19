@@ -18,7 +18,7 @@ use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AnnouncementController;
-
+use App\Http\Controllers\Admin\UserManagementController;
 // -------------------- ROOT ROUTE --------------------
 // Redirects to login page when accessing the root URL
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -142,3 +142,16 @@ Route::post('notifications/{notification}/mark-read', [NotificationController::c
 Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
 Route::get('quizzes/{quiz}/results/{attempt}', [StudentQuizController::class, 'results'])->name('quizzes.results');
+
+
+
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+    Route::patch('/users/{user}/toggle', [UserManagementController::class, 'toggleStatus'])->name('users.toggle');
+});

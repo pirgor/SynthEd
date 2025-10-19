@@ -14,6 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        /*
         // Create 5 instructor accounts
         for ($i = 1; $i <= 5; $i++) {
             User::create([
@@ -37,5 +38,16 @@ class UserSeeder extends Seeder
                 'profile_picture' => null,
             ]);
         }
+        */
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'student_id' => 'ADMIN001',
+                'password' => Hash::make('password123'),
+                'user_role' => 'admin',
+                'status' => true,
+            ]
+        );
     }
 }

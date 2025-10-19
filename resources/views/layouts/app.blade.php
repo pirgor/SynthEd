@@ -109,6 +109,17 @@
                                 <i class="bi bi-graph-up me-2"></i> Student Progress
                             </a>
                         </li>
+                    @elseif (Auth::user()->user_role === 'admin')
+                        <li>
+                            <a href="{{ route('users.index') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-people me-2"></i> Manage Users
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('users.create') }}" class="nav-link sidebar-link">
+                                <i class="bi bi-person-plus me-2"></i> Add User
+                            </a>
+                        </li>
                     @endif
                 </ul>
 
