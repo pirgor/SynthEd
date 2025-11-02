@@ -47,112 +47,143 @@
 
                 {{-- Audio Player --}}
                 <div id="audio-container" class="mt-3"></div>
+                {{-- 🧠 TTS Settings --}}
+                <div class="card mt-4">
+                    <div class="card-header bg-success text-white">
+                        <strong>Text-to-Speech Settings</strong>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('tts.settings.update') }}">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="mb-3">
+                                <label for="voice_id" class="form-label">Voice</label>
+                                <select class="form-select" name="voice_id" id="voice_id">
+                                    <option value="onwK4e9ZLuTAKqWW03F9"
+                                        {{ $settings->voice_id == 'onwK4e9ZLuTAKqWW03F9' ? 'selected' : '' }}>Male</option>
+                                    <option value="XrExE9yKIg1WjnnlVkGX"
+                                        {{ $settings->voice_id == 'XrExE9yKIg1WjnnlVkGX' ? 'selected' : '' }}>Female
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="speed" class="form-label">Playback Speed (0.7 - 1.2)</label>
+                                <input type="range" class="form-range" id="speed" name="speed" min="0.7"
+                                    max="1.2" step="0.05" value="{{ $settings->speed }}">
+                                <div>Current: <span id="speed-display">{{ $settings->speed }}</span>x</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-outline-success w-100">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-@endsection
+    @endsection
 
-@section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // --- Generate Audio ---
-        document.getElementById('generate').addEventListener('click', () => {
-            const text = @json($upload->extracted_text);
+    @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            // --- Generate Audio ---
+            document.getElementById('generate').addEventListener('click', () => {
+                const text = @json($upload->extracted_text);
 
-            if (!text || text.trim().length === 0) {
-                Swal.fire('No text found', 'This PDF has no extracted text available.', 'warning');
-                return;
-            }
+                if (!text || text.trim().length === 0) {
+                    Swal.fire('No text found', 'This PDF has no extracted text available.', 'warning');
+                    return;
+                }
 
-            Swal.fire({
-                title: 'Generating speech...',
-                text: 'Please wait while we process your request.',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            fetch("/speech-generate", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        text
-                    })
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to fetch audio");
-                    return res.blob();
-                })
-                .then(blob => {
-                    const audioUrl = URL.createObjectURL(blob);
-                    const player = document.createElement('audio');
-                    player.controls = true;
-                    player.src = audioUrl;
-                    player.autoplay = true;
-
-                    document.getElementById('audio-container').innerHTML = '';
-                    document.getElementById('audio-container').appendChild(player);
-
-                    Swal.fire('Done!', 'Your PDF text has been converted to speech.', 'success');
-                })
-                .catch(err => {
-                    Swal.fire('Error', err.message, 'error');
+                Swal.fire({
+                    title: 'Generating speech...',
+                    text: 'Please wait while we process your request.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
                 });
-        });
-        // --- Clear Audio ---
-        document.getElementById('clear').addEventListener('click', () => {
-            document.getElementById('audio-container').innerHTML = '';
-        });
-    </script>
-    <script>
-        // --- Generate Summary ---
-        document.getElementById('summary').addEventListener('click', () => {
-            const text = @json($upload->extracted_text);
 
-            if (!text || text.trim().length === 0) {
-                Swal.fire('No text found', 'This PDF has no extracted text available.', 'warning');
-                return;
-            }
-
-            Swal.fire({
-                title: 'Generating summary...',
-                text: 'Please wait while we analyze the content.',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            fetch("{{ route('student.summary.generate') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        text
+                fetch("/speech-generate", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            text
+                        })
                     })
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to fetch summary");
-                    return res.json();
-                })
-                .then(data => {
-                    Swal.close();
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to fetch audio");
+                        return res.blob();
+                    })
+                    .then(blob => {
+                        const audioUrl = URL.createObjectURL(blob);
+                        const player = document.createElement('audio');
+                        player.controls = true;
+                        player.src = audioUrl;
+                        player.autoplay = true;
 
-                    let summaryData = data.summary;
+                        document.getElementById('audio-container').innerHTML = '';
+                        document.getElementById('audio-container').appendChild(player);
 
-                    // 🔧 Fix: If summary is a stringified JSON, parse it
-                    if (typeof summaryData === "string") {
-                        try {
-                            summaryData = JSON.parse(summaryData);
-                        } catch (e) {
-                            // If it's just plain text, keep it as string
+                        Swal.fire('Done!', 'Your PDF text has been converted to speech.', 'success');
+                    })
+                    .catch(err => {
+                        Swal.fire('Error', err.message, 'error');
+                    });
+            });
+            // --- Clear Audio ---
+            document.getElementById('clear').addEventListener('click', () => {
+                document.getElementById('audio-container').innerHTML = '';
+            });
+        </script>
+        <script>
+            // --- Generate Summary ---
+            document.getElementById('summary').addEventListener('click', () => {
+                const text = @json($upload->extracted_text);
+
+                if (!text || text.trim().length === 0) {
+                    Swal.fire('No text found', 'This PDF has no extracted text available.', 'warning');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Generating summary...',
+                    text: 'Please wait while we analyze the content.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                fetch("{{ route('student.summary.generate') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            text
+                        })
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to fetch summary");
+                        return res.json();
+                    })
+                    .then(data => {
+                        Swal.close();
+
+                        let summaryData = data.summary;
+
+                        // 🔧 Fix: If summary is a stringified JSON, parse it
+                        if (typeof summaryData === "string") {
+                            try {
+                                summaryData = JSON.parse(summaryData);
+                            } catch (e) {
+                                // If it's just plain text, keep it as string
+                            }
                         }
-                    }
 
-                    const container = document.getElementById('summary-container');
-                    container.innerHTML = `
+                        const container = document.getElementById('summary-container');
+                        container.innerHTML = `
                 <div class="card border-success mt-3">
                     <div class="card-header bg-success text-white">
                         <strong>Generated Summary</strong>
@@ -162,35 +193,35 @@
                     </div>
                 </div>
             `;
-                })
-                .catch(err => {
-                    Swal.fire('Error', err.message, 'error');
-                });
-        });
+                    })
+                    .catch(err => {
+                        Swal.fire('Error', err.message, 'error');
+                    });
+            });
 
-        // --- Recursive formatter for study guide JSON or plain text ---
-        function renderSummary(data) {
-            // Case: plain string
-            if (typeof data === "string") {
-                return `<p style="white-space: pre-line">${data}</p>`;
-            }
+            // --- Recursive formatter for study guide JSON or plain text ---
+            function renderSummary(data) {
+                // Case: plain string
+                if (typeof data === "string") {
+                    return `<p style="white-space: pre-line">${data}</p>`;
+                }
 
-            // Case: nested object (study guide style)
-            if (typeof data === "object" && data !== null) {
-                let html = "<ul class='list-group list-group-flush'>";
-                for (const key in data) {
-                    html += `
+                // Case: nested object (study guide style)
+                if (typeof data === "object" && data !== null) {
+                    let html = "<ul class='list-group list-group-flush'>";
+                    for (const key in data) {
+                        html += `
                     <li class="list-group-item">
                         <strong>${key}</strong><br>
                         ${renderSummary(data[key])}
                     </li>
                 `;
+                    }
+                    html += "</ul>";
+                    return html;
                 }
-                html += "</ul>";
-                return html;
-            }
 
-            return `<p>${String(data)}</p>`;
-        }
-    </script>
-@endsection
+                return `<p>${String(data)}</p>`;
+            }
+        </script>
+    @endsection

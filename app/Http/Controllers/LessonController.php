@@ -88,8 +88,19 @@ class LessonController extends Controller
     public function viewUpload(LessonUpload $upload)
     {
         $lesson = $upload->lesson;
-        return view('instructor.lessons.view', compact('upload', 'lesson'));
+
+        // Retrieve or create TTS settings for the logged-in user
+        $settings = \App\Models\TtsSetting::firstOrCreate(
+            ['user_id' => auth()->id()],
+            [
+                'voice_id' => 'onwK4e9ZLuTAKqWW03F9',
+                'speed' => 1.0,
+            ]
+        );
+
+        return view('instructor.lessons.view', compact('upload', 'lesson', 'settings'));
     }
+
 
     public function edit(Lesson $lesson)
     {

@@ -26,13 +26,13 @@ class QuizController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'title' => 'required|string',
             'lesson_id' => 'required|exists:lessons,id', // validate lesson exists
             'deadline' => 'required'
         ]);
-        Quiz::create($request->only('title', 'description', 'lesson_id','deadline'));
+        Quiz::create($request->only('title', 'description', 'lesson_id', 'deadline'));
         return redirect()->route('instructor.quizzes.index')->with('success', 'Quiz created!');
     }
 
@@ -264,16 +264,19 @@ Course material:
     {
         $request->validate([
             'question_count' => 'required|integer|min:1|max:10',
+            'difficulty' => 'required|string|in:easy,medium,hard',
         ]);
 
         $questionCount = $request->input('question_count');
+        $difficulty = ucfirst($request->input('difficulty')); // Capitalize for readability
 
         // Combine all lesson texts
         $content = $lesson->uploads->pluck('extracted_text')->filter()->implode("\n");
 
         $prompt = "
 You are an exam question generator for practice quizzes.
-Read the following lesson material and generate {$questionCount} multiple-choice questions.
+Generate {$questionCount} multiple-choice questions based on the following lesson material.
+The overall difficulty level should be **{$difficulty}**.
 Each question must have exactly 4 options, only one correct.
 Also, provide a short explanation for the correct answer.
 Return strictly in JSON format like this:
@@ -316,7 +319,7 @@ Lesson material:
         session(['practice_quiz' => $questions]);
 
         return redirect()->route('student.lessons.practice', $lesson)
-            ->with('success', 'Practice quiz generated!');
+            ->with('success', "Practice quiz ({$difficulty}) generated!");
     }
 
     public function generateSummary(Request $request, Lesson $lesson)
