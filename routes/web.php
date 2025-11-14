@@ -25,11 +25,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // -------------------- AUTHENTICATION ROUTES --------------------
 // Provides routes for login, registration, password reset, etc.
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 // -------------------- STUDENT ROUTES --------------------
 // All routes in this group require authentication and student role
-Route::middleware(['auth', 'role:student'])
+Route::middleware(['auth', 'verified', 'role:student'])
     ->prefix('student') // Adds /student prefix to all routes in this group
     ->name('student.') // Adds 'student.' prefix to all route names in this group
     ->group(function () {
@@ -64,7 +64,7 @@ Route::middleware(['auth', 'role:student'])
 
 // -------------------- INSTRUCTOR ROUTES --------------------
 // All routes in this group require authentication and instructor role
-Route::middleware(['auth', 'role:instructor'])
+Route::middleware(['auth', 'verified', 'role:instructor'])
     ->prefix('instructor') // Adds /instructor prefix to all routes in this group
     ->name('instructor.') // Adds 'instructor.' prefix to all route names in this group
     ->group(function () {
@@ -111,42 +111,44 @@ Route::middleware(['auth', 'role:instructor'])
         Route::get('/progress/quiz/{quiz}', [ProgressController::class, 'quizReport'])->name('progress.quiz');
     });
 
-// -------------------- PROFILE ROUTES --------------------
-// Profile editing and updating routes (available to all authenticated users)
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('auth.edit');
-Route::post('/profile/update', [ProfileController::class, 'update'])->name('auth.update');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // -------------------- PROFILE ROUTES --------------------
+    // Profile editing and updating routes (available to all authenticated users)
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('auth.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('auth.update');
 
-// -------------------- TTS (TEXT-TO-SPEECH) ROUTES --------------------
-// Routes for text-to-speech functionality
-Route::get('/speech-test', [SpeechController::class, 'index'])->name('speech.test');
-Route::post('/speech-generate', [SpeechController::class, 'generate'])->name('speech.generate');
+    // -------------------- TTS (TEXT-TO-SPEECH) ROUTES --------------------
+    // Routes for text-to-speech functionality
+    Route::get('/speech-test', [SpeechController::class, 'index'])->name('speech.test');
+    Route::post('/speech-generate', [SpeechController::class, 'generate'])->name('speech.generate');
 
-// -------------------- TTS SETTINGS ROUTES --------------------
-// Routes for managing TTS settings
-Route::get('/settings/tts', [TtsSettingsController::class, 'edit'])->name('tts.settings.edit');
-Route::put('/settings/tts', [TtsSettingsController::class, 'update'])->name('tts.settings.update');
+    // -------------------- TTS SETTINGS ROUTES --------------------
+    // Routes for managing TTS settings
+    Route::get('/settings/tts', [TtsSettingsController::class, 'edit'])->name('tts.settings.edit');
+    Route::put('/settings/tts', [TtsSettingsController::class, 'update'])->name('tts.settings.update');
 
-// -------------------- CHATBOT ROUTES --------------------
-// Route for sending messages to the chatbot
-Route::post('/send', [ChatController::class, 'send']);
+    // -------------------- CHATBOT ROUTES --------------------
+    // Route for sending messages to the chatbot
+    Route::post('/send', [ChatController::class, 'send']);
 
-// -------------------- HOME ROUTE --------------------
-// Default home route after login
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('uploads/{upload}/view', [LessonController::class, 'viewUpload'])
-    ->name('uploads.view');
+    // -------------------- HOME ROUTE --------------------
+    // Default home route after login
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('uploads/{upload}/view', [LessonController::class, 'viewUpload'])
+        ->name('uploads.view');
 
-// Notifications
-Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::post('notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
-Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    // Notifications
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
-Route::get('quizzes/{quiz}/results/{attempt}', [StudentQuizController::class, 'results'])->name('quizzes.results');
+    Route::get('quizzes/{quiz}/results/{attempt}', [StudentQuizController::class, 'results'])->name('quizzes.results');
+});
 
 
 
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->group(function () {
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
     Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
